@@ -10,8 +10,7 @@ export default function ResultsChart({ options, voteCounts, userVotedIndex, load
 
   return (
     <div className="results-chart" aria-label="Poll results">
-      <div className="results-header">
-        <h3 className="results-title">Live Results</h3>
+      <div className="results-header" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
         <div className="results-meta">
           <span className="total-votes">{total} vote{total !== 1 ? 's' : ''}</span>
           {loading && <span className="refreshing-dot" title="Refreshing…" />}
@@ -40,6 +39,7 @@ export default function ResultsChart({ options, voteCounts, userVotedIndex, load
                     width: `${pct}%`,
                     background: COLORS[i % COLORS.length],
                     boxShadow: isUserVote ? `0 0 12px ${COLORS[i % COLORS.length]}` : 'none',
+                    transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   }}
                 />
               </div>

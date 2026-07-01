@@ -48,7 +48,13 @@ export function initWalletKit() {
  */
 export async function connectWallet() {
   initWalletKit();
-  return StellarWalletsKit.authModal();
+  const { address } = await StellarWalletsKit.authModal();
+  const mod = StellarWalletsKit.selectedModule;
+  return { 
+    address, 
+    walletName: mod?.productName || 'Wallet', 
+    walletIcon: mod?.productIcon || '' 
+  };
 }
 
 /**

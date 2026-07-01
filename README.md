@@ -124,24 +124,24 @@ Open http://localhost:5173
 
 ---
 
-## Error Handling
+## Error Handling & Toast History
 
-Three error types are surfaced in the UI with user-friendly messages (not just `console.log`):
+Three specific error types are surfaced in the UI as **persistent toast notifications** in the bottom right corner (useful for demoing errors in sequence):
 
-| # | Error | Trigger | Message |
+| # | Error | How to Trigger | Message |
 |---|-------|---------|---------|
-| 1 | **Wallet Not Found** | Extension not installed or `WALLET_NOT_FOUND` | "Wallet extension not found. Please install Freighter or xBull and refresh." |
-| 2 | **User Rejected** | User dismisses signing/connection modal | "You cancelled the wallet request. Click Connect or Vote again to try." |
-| 3 | **Insufficient Balance** | XLM balance too low to cover tx fee | "Insufficient XLM balance to pay the transaction fee." + link to Friendbot |
+| 1 | **Wallet Not Found** | Open the dApp in an incognito window or a browser without Freighter installed, then click Connect. | "Wallet extension not found. Please install Freighter or xBull and refresh." |
+| 2 | **User Rejected** | Click Connect or Vote, then click **Reject** in the Freighter popup. | "Vote cancelled — you rejected the request in your wallet" |
+| 3 | **Insufficient Balance** | Connect an unfunded testnet wallet (0 XLM) and try to vote. | "Insufficient balance to cover transaction fee" (with a link to Friendbot) |
 
 ---
 
 ## How Real-Time Updates Work
 
-- The frontend calls `get_results()` on the smart contract **every 5 seconds** using a `setInterval` in a React `useEffect`
-- Calls are **simulated** (read-only, no gas) using `rpc.Server.simulateTransaction()` — no fee for polling
-- Results update immediately after a vote is confirmed, then continue polling
-- A pulsing dot in the UI indicates when a refresh is in flight
+- **Polling with Visual Indicator**: The frontend calls `get_results()` on the smart contract **every 5 seconds**. A visual circular progress ring in the "Live Results" section shows exactly when the next refresh will happen.
+- **Timestamp**: A "Last updated Xs ago" timer ticks up every second.
+- **Smooth Animations**: When results change, the percentage bars animate smoothly (`transition: width 0.8s ease-out`) instead of snapping.
+- **Gas-free Reads**: Calls are **simulated** (read-only) using `rpc.Server.simulateTransaction()` — no fee for polling.
 
 ---
 

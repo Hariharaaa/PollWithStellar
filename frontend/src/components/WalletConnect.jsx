@@ -2,22 +2,19 @@ import { useState } from 'react';
 import { connectWallet, disconnectWallet } from '../lib/wallet.js';
 import { classifyError, ErrorType, ERROR_MESSAGES } from '../lib/errors.js';
 
-export default function WalletConnect({ address, onConnect, onDisconnect }) {
+export default function WalletConnect({ wallet, onConnect, onDisconnect, showError }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   async function handleConnect() {
     setLoading(true);
-    setError(null);
     try {
-      const { address: addr } = await connectWallet();
-      onConnect(addr);
+      const walletData = await connectWallet();
+      onConnect(walletData);
     } catch (err) {
       console.error('[WalletConnect] connect error:', err);
       const type = classifyError(err);
-      // Don't show error if user simply closed the modal
       if (err?.message !== 'The user closed the modal.' && err?.code !== -1) {
-        setError({ type, message: ERROR_MESSAGES[type] });
+        showError({ type, message: ERROR_MESSAGES[type] });
       }
     } finally {
       setLoading(false);
@@ -27,7 +24,6 @@ export default function WalletConnect({ address, onConnect, onDisconnect }) {
   async function handleDisconnect() {
     await disconnectWallet();
     onDisconnect();
-    setError(null);
   }
 
   function shortAddr(addr) {
@@ -37,11 +33,14 @@ export default function WalletConnect({ address, onConnect, onDisconnect }) {
 
   return (
     <div className="wallet-connect">
-      {address ? (
+      {wallet ? (
         <div className="wallet-connected">
+          {wallet.walletIcon && <img src={wallet.walletIcon} alt={wallet.walletName} className="wallet-icon-img" width="20" height="20" />}
           <div className="wallet-badge">
             <span className="wallet-dot" />
-            <span className="wallet-addr" title={address}>{shortAddr(address)}</span>
+            <span className="wallet-addr" title={wallet.address}>
+              {wallet.walletName ? `${wallet.walletName}: ` : ''}{shortAddr(wallet.address)}
+            </span>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={handleDisconnect}>
             Disconnect
@@ -67,32 +66,6 @@ export default function WalletConnect({ address, onConnect, onDisconnect }) {
             </span>
           )}
         </button>
-      )}
-
-      {error && (
-        <div className={`error-banner error-${error.type.toLowerCase()}`} role="alert">
-          <span className="error-icon">
-            {error.type === ErrorType.WALLET_NOT_FOUND && '🔌'}
-            {error.type === ErrorType.USER_REJECTED && '🚫'}
-            {error.type === ErrorType.INSUFFICIENT_BALANCE && '💸'}
-            {error.type === ErrorType.UNKNOWN && '❌'}
-          </span>
-          <div>
-            <strong>
-              {error.type === ErrorType.WALLET_NOT_FOUND && 'Wallet Not Found'}
-              {error.type === ErrorType.USER_REJECTED && 'Request Rejected'}
-              {error.type === ErrorType.INSUFFICIENT_BALANCE && 'Insufficient Balance'}
-              {error.type === ErrorType.UNKNOWN && 'Connection Error'}
-            </strong>
-            <p>{error.message}</p>
-            {error.type === ErrorType.WALLET_NOT_FOUND && (
-              <a href="https://www.freighter.app/" target="_blank" rel="noopener noreferrer" className="error-link">
-                Install Freighter →
-              </a>
-            )}
-          </div>
-          <button className="error-close" onClick={() => setError(null)} aria-label="Dismiss">✕</button>
-        </div>
       )}
     </div>
   );

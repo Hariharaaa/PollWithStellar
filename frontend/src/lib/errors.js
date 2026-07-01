@@ -12,11 +12,11 @@ export const ErrorType = {
 
 export const ERROR_MESSAGES = {
   [ErrorType.WALLET_NOT_FOUND]:
-    'Wallet extension not found. Please install Freighter or xBull and refresh the page.',
+    'Wallet extension not found. Please install Freighter or xBull and refresh.',
   [ErrorType.USER_REJECTED]:
-    'You cancelled the wallet request. Click Connect or Vote again to try.',
+    'Vote cancelled — you rejected the request in your wallet',
   [ErrorType.INSUFFICIENT_BALANCE]:
-    'Insufficient XLM balance to pay the transaction fee. Fund your account at friendbot.stellar.org',
+    'Insufficient balance to cover transaction fee',
   [ErrorType.UNKNOWN]: 'An unexpected error occurred. Check the console for details.',
 };
 
