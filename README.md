@@ -6,6 +6,20 @@ A decentralized polling dApp built for the Stellar Testnet. Connect your wallet 
 
 A real-time live poll dApp built on **Stellar Soroban testnet**. Connected wallets vote on a single question and results update live for all viewers every 5 seconds.
 
+## Screenshots
+
+**1. Wallets Available**
+![Wallets Available](./wallets_available.png)
+
+**2. After Connection**
+![After Connection](./after_connection.png)
+
+**3. Polling Done**
+![Polling Done](./polling_done.png)
+
+**4. Real-time Results (Updates every 5 seconds)**
+![Result Update](./result_update.png)
+
 ---
 
 ## What It Does
