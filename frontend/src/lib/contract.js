@@ -31,10 +31,10 @@ export async function getResults() {
   const server = getServer();
   const contract = new StellarSdk.Contract(CONTRACT_ID);
 
-  const account = new StellarSdk.Account(
-    'GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN',
-    '0'
-  );
+  // Use a random keypair as the dummy source account.
+  // Simulations don't require the source to exist on-chain or have a real sequence.
+  const dummyKeypair = StellarSdk.Keypair.random();
+  const account = new StellarSdk.Account(dummyKeypair.publicKey(), '0');
 
   const tx = new StellarSdk.TransactionBuilder(account, {
     fee: StellarSdk.BASE_FEE,
@@ -56,12 +56,14 @@ export async function getResults() {
 
   const native = scValToNative(retVal);
 
-  // native is an object with keys: question, options, vote_counts
-  return {
-    question: native.question,
-    options: Array.from(native.options),
-    voteCounts: Array.from(native.vote_counts).map(Number),
-  };
+  // Soroban returns struct fields as-is. Keys may be camelCase or snake_case
+  // depending on SDK version. Handle both:
+  const question = native.question ?? '';
+  const options = Array.from(native.options ?? []);
+  // vote_counts is the field name from #[contracttype] struct
+  const voteCounts = Array.from(native.vote_counts ?? native.voteCounts ?? []).map(Number);
+
+  return { question, options, voteCounts };
 }
 
 // ── hasVoted ──────────────────────────────────────────────────────────────────
@@ -74,7 +76,8 @@ export async function hasVoted(address) {
   const server = getServer();
   const contract = new StellarSdk.Contract(CONTRACT_ID);
 
-  const account = new StellarSdk.Account(address, '0');
+  const dummyKeypair2 = StellarSdk.Keypair.random();
+  const account = new StellarSdk.Account(dummyKeypair2.publicKey(), '0');
 
   const tx = new StellarSdk.TransactionBuilder(account, {
     fee: StellarSdk.BASE_FEE,
@@ -116,9 +119,10 @@ export async function castVote(voterAddress, optionIndex, signTx, onStatus) {
 
   onStatus('Preparing');
 
-  // Load real account sequence
+  // Load real account sequence and ensure it's a string
   const accountData = await server.getAccount(voterAddress);
-  const account = new StellarSdk.Account(voterAddress, accountData.sequence);
+  const sequence = String(accountData.sequence);
+  const account = new StellarSdk.Account(voterAddress, sequence);
 
   const tx = new StellarSdk.TransactionBuilder(account, {
     fee: '100000', // 0.01 XLM — generous for Soroban

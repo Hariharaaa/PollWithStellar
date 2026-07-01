@@ -5,23 +5,24 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
-  },
-  resolve: {
-    alias: {
-      // Stellar SDK needs these Node shims
-      buffer: 'buffer',
-    },
+    'process.env': '{}',
   },
   optimizeDeps: {
-    include: ['buffer'],
-    esbuildOptions: {
-      define: { global: 'globalThis' },
-    },
+    // Include stellar-sdk in pre-bundling (default behaviour)
+    // so Vite resolves CommonJS modules correctly
+    include: [
+      '@stellar/stellar-sdk',
+      '@creit.tech/stellar-wallets-kit',
+      '@creit.tech/stellar-wallets-kit/sdk',
+      '@creit.tech/stellar-wallets-kit/types',
+    ],
   },
   build: {
     target: 'esnext',
-    rollupOptions: {
-      plugins: [],
+    rolldownOptions: {
+      output: {
+        codeSplitting: true,
+      },
     },
   },
 })
