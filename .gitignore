@@ -1,0 +1,18 @@
+# Rust build artifacts
+contract/target/
+
+# Frontend node modules and build
+frontend/node_modules/
+frontend/dist/
+
+# Environment files with secrets
+frontend/.env
+*.env.local
+
+# OS
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
