@@ -20,7 +20,7 @@ A real-time live poll dApp built on **Stellar Soroban testnet**. Connected walle
 **4. Real-time Results (Updates every 5 seconds)**
 ![Result Update](./result_update.png)
 
-**[Live Link](https://disasterreliefrail.vercel.app/)
+[Live Link](https://disasterreliefrail.vercel.app/)
 
 ---
 
